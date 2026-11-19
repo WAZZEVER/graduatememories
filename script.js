@@ -31,6 +31,12 @@ function renderSwitcher(activeKey) {
   const allLink = document.getElementById("all-notes-link");
   allLink.href = isLocalFile ? window.location.pathname : "/";
 
+  allLink.onclick = (e) => {
+    e.preventDefault();
+    window.history.pushState({}, "", allLink.href);
+    renderDirectory();
+  };
+
   switcher.innerHTML = "";
   Object.entries(TEACHERS).forEach(([key, data]) => {
     const isActive = key === activeKey;
@@ -45,7 +51,6 @@ function renderSwitcher(activeKey) {
       btn.style.backgroundColor = data.accent;
     }
 
-    // Instant client-side switch without full page reload
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       if (key === currentTeacherKey) return;
@@ -63,10 +68,8 @@ function renderLetter(key, isSwitch = false) {
   const data = TEACHERS[key];
   document.title = `For ${data.name} • Thank You`;
 
-  // Update switcher pills
   renderSwitcher(key);
 
-  // Apply teacher's accent colors
   document.getElementById("ambient-glow").style.background =
     `radial-gradient(ellipse at top, ${data.accentSoft}, transparent 70%)`;
   document.getElementById("card-accent-bar").style.backgroundColor = data.accent;
@@ -80,7 +83,6 @@ function renderLetter(key, isSwitch = false) {
   btn.style.backgroundColor = data.accent;
   document.getElementById("appreciate-label").textContent = "Send a Bloom";
 
-  // Populate text content
   document.getElementById("teacher-role").textContent = data.role;
   document.getElementById("teacher-name").textContent = data.name;
   document.getElementById("letter-greeting").textContent = data.greeting;
@@ -95,35 +97,37 @@ function renderLetter(key, isSwitch = false) {
     paragraphsContainer.appendChild(p);
   });
 
-  // Switch views
   document.getElementById("directory-view").classList.add("hidden");
   document.getElementById("letter-view").classList.remove("hidden");
-  lucide.createIcons();
+  if (window.lucide) lucide.createIcons();
 
-  if (isSwitch) {
-    gsap.fromTo(".stationery-card", { y: 12, opacity: 0.4 }, { y: 0, opacity: 1, duration: 0.4, ease: "power2.out" });
-  } else {
-    gsap.from(".reveal", {
-      y: 22,
-      opacity: 0,
-      duration: 0.85,
-      stagger: 0.14,
-      ease: "power3.out"
-    });
+  if (window.gsap) {
+    if (isSwitch) {
+      gsap.fromTo(".stationery-card", { y: 12, opacity: 0.4 }, { y: 0, opacity: 1, duration: 0.4, ease: "power2.out" });
+    } else {
+      gsap.from(".reveal", {
+        y: 22,
+        opacity: 0,
+        duration: 0.85,
+        stagger: 0.14,
+        ease: "power3.out"
+      });
+    }
   }
 }
 
-// Single listener for the Bloom button
 document.getElementById("appreciate-btn").addEventListener("click", () => {
   if (!currentTeacherKey) return;
   const data = TEACHERS[currentTeacherKey];
   bloomCount++;
-  confetti({
-    particleCount: 45,
-    spread: 65,
-    origin: { y: 0.72 },
-    colors: [data.accent, "#fbbf24", "#f472b6", "#34d399"]
-  });
+  if (window.confetti) {
+    confetti({
+      particleCount: 45,
+      spread: 65,
+      origin: { y: 0.72 },
+      colors: [data.accent, "#fbbf24", "#f472b6", "#34d399"]
+    });
+  }
   document.getElementById("appreciate-label").textContent =
     bloomCount === 1 ? "Bloom Sent!" : `Sent ${bloomCount} Blooms`;
 });
@@ -139,7 +143,6 @@ function renderDirectory() {
 
   const keys = Object.keys(TEACHERS);
 
-  // "Preview Letters" button opens the first teacher immediately
   document.getElementById("open-first-btn").onclick = () => {
     const firstKey = keys[0];
     window.history.pushState({}, "", getTeacherUrl(firstKey));
@@ -177,25 +180,25 @@ function renderDirectory() {
 
   document.getElementById("letter-view").classList.add("hidden");
   document.getElementById("directory-view").classList.remove("hidden");
-  lucide.createIcons();
+  if (window.lucide) lucide.createIcons();
 
-  gsap.from(".dir-card", {
-    y: 16,
-    opacity: 0,
-    duration: 0.6,
-    stagger: 0.08,
-    ease: "power2.out"
-  });
+  if (window.gsap) {
+    gsap.from(".dir-card", {
+      y: 16,
+      opacity: 0,
+      duration: 0.6,
+      stagger: 0.08,
+      ease: "power2.out"
+    });
+  }
 }
 
-// Handle browser Back / Forward buttons
 window.addEventListener("popstate", () => {
   const key = detectTeacherKey();
   if (key) renderLetter(key);
   else renderDirectory();
 });
 
-// Boot
 const initialKey = detectTeacherKey();
 if (initialKey) {
   renderLetter(initialKey);
