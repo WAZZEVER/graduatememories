@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>A Thank-You Note • Class of 2026</title>
 
-  <!-- Google Fonts: Lora (Letter Serif) & Inter (Clean UI) -->
+  <!-- Google Fonts: Lora & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
@@ -43,7 +43,7 @@
   <main id="letter-view" class="hidden relative z-10 max-w-2xl mx-auto px-5 py-10 md:py-16">
     
     <!-- Quick Teacher Switcher Bar -->
-    <nav aria-label="Switch Teacher" class="reveal flex flex-wrap items-center justify-center gap-1.5 mb-8 p-1.5 rounded-2xl bg-white/85 backdrop-blur-md border border-stone-200/80 shadow-xs">
+    <nav aria-label="Switch Teacher" class="reveal flex flex-wrap items-center justify-center gap-1.5 mb-8 p-1.5 rounded-2xl bg-white/85 backdrop-blur-md border border-stone-200/80 shadow-sm">
       <a id="all-notes-link" href="/" class="px-3 py-1.5 rounded-xl text-xs font-medium text-stone-500 hover:text-stone-900 hover:bg-stone-100 transition flex items-center gap-1">
         <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
         <span>All</span>
@@ -54,11 +54,8 @@
 
     <!-- Envelope / Letter Sheet -->
     <article class="reveal stationery-card bg-white rounded-3xl p-8 sm:p-12 md:p-14 shadow-[0_20px_50px_rgba(28,25,23,0.06)] border border-stone-200/70 relative overflow-hidden">
-      
-      <!-- Subtle Corner Accent -->
       <div id="card-accent-bar" class="absolute top-0 inset-x-0 h-1.5 transition-colors duration-500"></div>
 
-      <!-- Header -->
       <header class="mb-8 pb-6 border-b border-stone-100 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <p id="teacher-role" class="text-xs uppercase tracking-widest font-semibold text-stone-400 mb-1.5"></p>
@@ -67,23 +64,19 @@
         <span class="text-xs font-serif italic text-stone-400">November 2026</span>
       </header>
 
-      <!-- Letter Body -->
       <div class="space-y-5 font-serif text-[17px] sm:text-[18px] leading-[1.85] text-stone-700">
         <p id="letter-greeting" class="font-medium text-stone-900"></p>
         <div id="letter-paragraphs" class="space-y-5"></div>
       </div>
 
-      <!-- Highlight Quote Callout -->
       <blockquote id="memory-quote" class="my-9 px-5 py-4 rounded-2xl font-serif italic text-sm sm:text-base text-stone-600 border-l-2 transition-colors duration-500"></blockquote>
 
-      <!-- Sign-off -->
       <footer class="pt-4 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
         <div>
           <p id="letter-signoff" class="font-serif text-stone-500 text-base mb-1"></p>
           <p id="letter-sender" class="font-serif text-2xl font-semibold text-stone-900"></p>
         </div>
 
-        <!-- Micro-interaction Button -->
         <button id="appreciate-btn" class="group inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full text-sm font-medium text-white shadow-md transition-all hover:scale-[1.03] active:scale-95">
           <i data-lucide="heart" class="w-4 h-4 fill-current transition-transform group-hover:scale-110"></i>
           <span id="appreciate-label">Send a Bloom</span>
@@ -93,9 +86,9 @@
   </main>
 
   <!-- =========================================================
-       VIEW 2: ROOT DIRECTORY VIEW (Landing Page)
+       VIEW 2: ROOT DIRECTORY VIEW (Visible by default!)
   ========================================================== -->
-  <main id="directory-view" class="hidden relative z-10 max-w-3xl mx-auto px-6 py-16 md:py-24">
+  <main id="directory-view" class="relative z-10 max-w-3xl mx-auto px-6 py-16 md:py-24">
     <div class="text-center mb-12">
       <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-stone-200 text-xs font-medium text-stone-500 mb-5">
         <i data-lucide="flower-2" class="w-3.5 h-3.5 text-amber-600"></i>
@@ -108,14 +101,12 @@
         Select a teacher below to open their personal graduation letter.
       </p>
       
-      <!-- Quick Launch Button -->
       <button id="open-first-btn" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition shadow-sm">
         <i data-lucide="book-open" class="w-4 h-4"></i>
         <span>Preview Letters</span>
       </button>
     </div>
 
-    <!-- Auto-populated Cards Grid -->
     <div id="directory-grid" class="grid sm:grid-cols-2 gap-4"></div>
   </main>
 
