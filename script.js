@@ -1,74 +1,123 @@
-// 1. Initialize Lucide Icons
-lucide.createIcons();
-
-// 2. GSAP Entrance Animations
-gsap.from(".hero-animate", {
-  y: 24,
-  opacity: 0,
-  duration: 0.8,
-  stagger: 0.12,
-  ease: "power3.out"
-});
-
-// 3. Dark Mode Toggle with LocalStorage Persistence
-const themeToggle = document.getElementById("theme-toggle");
-const htmlEl = document.documentElement;
-
-if (localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-  htmlEl.classList.add("dark");
+function normalizeSlug(raw) {
+  return decodeURIComponent(raw || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-"); // Converts spaces ("mr huang") to hyphens ("mr-huang")
 }
 
-themeToggle.addEventListener("click", () => {
-  htmlEl.classList.toggle("dark");
-  localStorage.theme = htmlEl.classList.contains("dark") ? "dark" : "light";
-});
+function detectTeacherKey() {
+  const params = new URLSearchParams(window.location.search);
+  const queryKey = normalizeSlug(params.get("to"));
+  if (queryKey && TEACHERS[queryKey]) return queryKey;
 
-// 4. Interactive Confetti Button
-document.getElementById("celebrate-btn").addEventListener("click", () => {
-  confetti({
-    particleCount: 70,
-    spread: 60,
-    origin: { y: 0.7 }
+  const pathSlug = normalizeSlug(window.location.pathname.replace(/^\/|\/$/g, ""));
+  if (pathSlug && TEACHERS[pathSlug]) return pathSlug;
+
+  return null;
+}
+
+function renderLetter(key) {
+  const data = TEACHERS[key];
+  document.title = `For ${data.name} • Thank You`;
+
+  // Apply teacher's accent colors
+  document.getElementById("ambient-glow").style.background =
+    `radial-gradient(ellipse at top, ${data.accentSoft}, transparent 70%)`;
+  document.getElementById("card-accent-bar").style.backgroundColor = data.accent;
+  document.getElementById("badge-icon").style.color = data.accent;
+
+  const quoteEl = document.getElementById("memory-quote");
+  quoteEl.style.backgroundColor = data.accentSoft;
+  quoteEl.style.borderColor = data.accent;
+  quoteEl.textContent = data.memoryQuote;
+
+  const btn = document.getElementById("appreciate-btn");
+  btn.style.backgroundColor = data.accent;
+
+  // Populate text content
+  document.getElementById("teacher-role").textContent = data.role;
+  document.getElementById("teacher-name").textContent = data.name;
+  document.getElementById("letter-greeting").textContent = data.greeting;
+  document.getElementById("letter-signoff").textContent = data.signOff;
+  document.getElementById("letter-sender").textContent = data.sender;
+
+  const paragraphsContainer = document.getElementById("letter-paragraphs");
+  paragraphsContainer.innerHTML = "";
+  data.paragraphs.forEach((text) => {
+    const p = document.createElement("p");
+    p.textContent = text;
+    paragraphsContainer.appendChild(p);
   });
-});
 
-// 5. Category Filter Logic
-const filterBtns = document.querySelectorAll(".filter-btn");
-const cards = document.querySelectorAll(".project-card");
+  // Show Letter View & animate
+  document.getElementById("letter-view").classList.remove("hidden");
+  lucide.createIcons();
 
-filterBtns.forEach((btn) => {
+  gsap.from(".reveal", {
+    y: 22,
+    opacity: 0,
+    duration: 0.85,
+    stagger: 0.14,
+    ease: "power3.out"
+  });
+
+  // Interactive Bloom Confetti Button
+  let bloomCount = 0;
   btn.addEventListener("click", () => {
-    // Update active button styling
-    filterBtns.forEach((b) => {
-      b.classList.remove("bg-indigo-600", "text-white");
-      b.classList.add("bg-slate-200/70", "dark:bg-slate-800");
+    bloomCount++;
+    confetti({
+      particleCount: 45,
+      spread: 65,
+      origin: { y: 0.72 },
+      colors: [data.accent, "#fbbf24", "#f472b6", "#34d399"]
     });
-    btn.classList.remove("bg-slate-200/70", "dark:bg-slate-800");
-    btn.classList.add("bg-indigo-600", "text-white");
-
-    // Filter cards
-    const filter = btn.getAttribute("data-filter");
-    cards.forEach((card) => {
-      const category = card.getAttribute("data-category");
-      if (filter === "all" || category === filter) {
-        card.classList.remove("hidden-card");
-        gsap.fromTo(card, { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.3 });
-      } else {
-        card.classList.add("hidden-card");
-      }
-    });
+    document.getElementById("appreciate-label").textContent =
+      bloomCount === 1 ? "Bloom Sent!" : `Sent ${bloomCount} Blooms`;
   });
-});
+}
 
-// 6. Copy Email to Clipboard
-const copyBtn = document.getElementById("copy-email-btn");
-const copyText = document.getElementById("copy-text");
+function renderDirectory() {
+  const grid = document.getElementById("directory-grid");
+  grid.innerHTML = "";
 
-copyBtn.addEventListener("click", async () => {
-  const email = copyBtn.getAttribute("data-email");
-  await navigator.clipboard.writeText(email);
-  copyText.textContent = "Copied to clipboard!";
-  setTimeout(() => {
-    copyText.textContent = email;
-  }, 2000);
-});
+  Object.entries(TEACHERS).forEach(([key, data]) => {
+    const card = document.createElement("a");
+    card.href = window.location.protocol === "file:" ? `?to=${key}` : `/${key}`;
+    card.className =
+      "dir-card group p-6 rounded-2xl bg-white border border-stone-200/80 shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all flex items-center justify-between";
+
+    card.innerHTML = `
+      <div class="flex items-center gap-4">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center font-serif font-semibold text-lg"
+             style="background-color: ${data.accentSoft}; color: ${data.accent};">
+          ${data.name.replace(/^(Ms|Mr)\s+/i, "")[0]}
+        </div>
+        <div>
+          <h2 class="font-serif font-semibold text-lg text-stone-900 group-hover:underline">${data.name}</h2>
+          <p class="text-xs text-stone-400">/${key}</p>
+        </div>
+      </div>
+      <i data-lucide="arrow-up-right" class="w-4 h-4 text-stone-400 group-hover:text-stone-800 transition"></i>
+    `;
+    grid.appendChild(card);
+  });
+
+  document.getElementById("directory-view").classList.remove("hidden");
+  lucide.createIcons();
+
+  gsap.from(".dir-card", {
+    y: 16,
+    opacity: 0,
+    duration: 0.6,
+    stagger: 0.08,
+    ease: "power2.out"
+  });
+}
+
+// Boot
+const teacherKey = detectTeacherKey();
+if (teacherKey) {
+  renderLetter(teacherKey);
+} else {
+  renderDirectory();
+}

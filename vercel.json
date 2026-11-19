@@ -1,4 +1,9 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false
+  "rewrites": [
+    {
+      "source": "/:path((?!style\\.css|script\\.js|letters\\.js).*)",
+      "destination": "/index.html"
+    }
+  ]
 }
