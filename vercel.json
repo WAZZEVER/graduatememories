@@ -1,9 +1,9 @@
 {
-  "cleanUrls": true,
   "rewrites": [
-    {
-      "source": "/:path((?!style\\.css|script\\.js|letters\\.js).*)",
-      "destination": "/index.html"
-    }
+    { "source": "/ms-danciu", "destination": "/index.html" },
+    { "source": "/mr-huang", "destination": "/index.html" },
+    { "source": "/ms-b", "destination": "/index.html" },
+    { "source": "/ms-hughes", "destination": "/index.html" },
+    { "source": "/ms-bhatti", "destination": "/index.html" }
   ]
 }
