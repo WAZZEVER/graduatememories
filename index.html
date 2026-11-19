@@ -38,23 +38,21 @@
   <div id="ambient-glow" class="fixed inset-x-0 top-0 h-72 pointer-events-none opacity-60 transition-colors duration-700"></div>
 
   <!-- =========================================================
-       VIEW 1: TEACHER LETTER VIEW
+       VIEW 1: PRIVATE TEACHER LETTER VIEW (Only via /teacher-name)
   ========================================================== -->
-  <main id="letter-view" class="hidden relative z-10 max-w-2xl mx-auto px-5 py-10 md:py-16">
+  <main id="letter-view" class="hidden relative z-10 max-w-2xl mx-auto px-5 py-12 md:py-20">
     
-    <!-- Quick Teacher Switcher Bar -->
-    <nav aria-label="Switch Teacher" class="reveal flex flex-wrap items-center justify-center gap-1.5 mb-8 p-1.5 rounded-2xl bg-white/85 backdrop-blur-md border border-stone-200/80 shadow-sm">
-      <a id="all-notes-link" href="/" class="px-3 py-1.5 rounded-xl text-xs font-medium text-stone-500 hover:text-stone-900 hover:bg-stone-100 transition flex items-center gap-1">
-        <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
-        <span>All</span>
-      </a>
-      <div class="h-4 w-px bg-stone-200 mx-0.5"></div>
-      <div id="teacher-switcher" class="flex flex-wrap items-center justify-center gap-1"></div>
-    </nav>
+    <!-- Top Pill Badge -->
+    <div class="reveal flex justify-center mb-8">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 border border-stone-200/80 shadow-xs text-xs font-medium text-stone-500">
+        <i data-lucide="flower-2" class="w-3.5 h-3.5" id="badge-icon"></i>
+        <span>Graduation Keepsake • 2026</span>
+      </div>
+    </div>
 
     <!-- Envelope / Letter Sheet -->
     <article class="reveal stationery-card bg-white rounded-3xl p-8 sm:p-12 md:p-14 shadow-[0_20px_50px_rgba(28,25,23,0.06)] border border-stone-200/70 relative overflow-hidden">
-      <div id="card-accent-bar" class="absolute top-0 inset-x-0 h-1.5 transition-colors duration-500"></div>
+      <div id="card-accent-bar" class="absolute top-0 inset-x-0 h-1.5"></div>
 
       <header class="mb-8 pb-6 border-b border-stone-100 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
@@ -69,7 +67,7 @@
         <div id="letter-paragraphs" class="space-y-5"></div>
       </div>
 
-      <blockquote id="memory-quote" class="my-9 px-5 py-4 rounded-2xl font-serif italic text-sm sm:text-base text-stone-600 border-l-2 transition-colors duration-500"></blockquote>
+      <blockquote id="memory-quote" class="my-9 px-5 py-4 rounded-2xl font-serif italic text-sm sm:text-base text-stone-600 border-l-2"></blockquote>
 
       <footer class="pt-4 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
         <div>
@@ -86,28 +84,23 @@
   </main>
 
   <!-- =========================================================
-       VIEW 2: ROOT DIRECTORY VIEW (Visible by default!)
+       VIEW 2: PRIVATE COVER PAGE (No links or directory)
   ========================================================== -->
-  <main id="directory-view" class="relative z-10 max-w-3xl mx-auto px-6 py-16 md:py-24">
-    <div class="text-center mb-12">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-stone-200 text-xs font-medium text-stone-500 mb-5">
-        <i data-lucide="flower-2" class="w-3.5 h-3.5 text-amber-600"></i>
-        <span>Class of 2026 • Thank You Archive</span>
+  <main id="cover-view" class="relative z-10 min-h-screen flex items-center justify-center px-6">
+    <div class="max-w-md w-full text-center bg-white rounded-3xl p-10 sm:p-12 shadow-[0_20px_50px_rgba(28,25,23,0.05)] border border-stone-200/70">
+      <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-6">
+        <i data-lucide="flower-2" class="w-6 h-6"></i>
       </div>
-      <h1 class="font-serif text-3xl sm:text-5xl font-semibold text-stone-900 tracking-tight mb-4">
-        Notes of Gratitude
-      </h1>
-      <p class="text-stone-500 max-w-md mx-auto text-sm sm:text-base mb-7">
-        Select a teacher below to open their personal graduation letter.
+      <p class="text-xs uppercase tracking-widest font-semibold text-stone-400 mb-2">
+        Class of 2026
       </p>
-      
-      <button id="open-first-btn" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition shadow-sm">
-        <i data-lucide="book-open" class="w-4 h-4"></i>
-        <span>Preview Letters</span>
-      </button>
+      <h1 class="font-serif text-2xl sm:text-3xl font-semibold text-stone-900 tracking-tight mb-3">
+        A Keepsake Note
+      </h1>
+      <p class="text-stone-500 text-sm leading-relaxed">
+        Tap your NFC flower keepsake with your phone to open your personal graduation letter.
+      </p>
     </div>
-
-    <div id="directory-grid" class="grid sm:grid-cols-2 gap-4"></div>
   </main>
 
   <!-- Data & Logic -->

@@ -10,69 +10,31 @@ function normalizeSlug(raw) {
 }
 
 function detectTeacherKey() {
-  const params = new URLSearchParams(window.location.search);
-  const queryKey = normalizeSlug(params.get("to"));
-  if (queryKey && TEACHERS[queryKey]) return queryKey;
-
-  if (!isLocalFile) {
-    const pathSlug = normalizeSlug(window.location.pathname.replace(/^\/|\/$/g, ""));
-    if (pathSlug && TEACHERS[pathSlug]) return pathSlug;
+  // Allow ?to=mr-huang only when opening locally via file:// on your computer
+  if (isLocalFile) {
+    const params = new URLSearchParams(window.location.search);
+    const queryKey = normalizeSlug(params.get("to"));
+    if (queryKey && TEACHERS[queryKey]) return queryKey;
+    return null;
   }
+
+  // Strictly match /teacher-name path on live site
+  const pathSlug = normalizeSlug(window.location.pathname.replace(/^\/|\/$/g, ""));
+  if (pathSlug && TEACHERS[pathSlug]) return pathSlug;
 
   return null;
 }
 
-function getTeacherUrl(key) {
-  return isLocalFile ? `?to=${key}` : `/${key}`;
-}
-
-function renderSwitcher(activeKey) {
-  const switcher = document.getElementById("teacher-switcher");
-  const allLink = document.getElementById("all-notes-link");
-  allLink.href = isLocalFile ? window.location.pathname : "/";
-
-  allLink.onclick = (e) => {
-    e.preventDefault();
-    window.history.pushState({}, "", allLink.href);
-    renderDirectory();
-  };
-
-  switcher.innerHTML = "";
-  Object.entries(TEACHERS).forEach(([key, data]) => {
-    const isActive = key === activeKey;
-    const btn = document.createElement("a");
-    btn.href = getTeacherUrl(key);
-    btn.textContent = data.name;
-    btn.className = isActive
-      ? "px-3 py-1.5 rounded-xl text-xs font-semibold text-white shadow-xs transition"
-      : "px-3 py-1.5 rounded-xl text-xs font-medium text-stone-600 hover:bg-stone-100 hover:text-stone-900 transition";
-
-    if (isActive) {
-      btn.style.backgroundColor = data.accent;
-    }
-
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      if (key === currentTeacherKey) return;
-      window.history.pushState({}, "", getTeacherUrl(key));
-      renderLetter(key, true);
-    });
-
-    switcher.appendChild(btn);
-  });
-}
-
-function renderLetter(key, isSwitch = false) {
+function renderLetter(key) {
   currentTeacherKey = key;
   bloomCount = 0;
   const data = TEACHERS[key];
   document.title = `For ${data.name} • Thank You`;
 
-  renderSwitcher(key);
-
   document.getElementById("ambient-glow").style.background =
     `radial-gradient(ellipse at top, ${data.accentSoft}, transparent 70%)`;
   document.getElementById("card-accent-bar").style.backgroundColor = data.accent;
+  document.getElementById("badge-icon").style.color = data.accent;
 
   const quoteEl = document.getElementById("memory-quote");
   quoteEl.style.backgroundColor = data.accentSoft;
@@ -81,7 +43,6 @@ function renderLetter(key, isSwitch = false) {
 
   const btn = document.getElementById("appreciate-btn");
   btn.style.backgroundColor = data.accent;
-  document.getElementById("appreciate-label").textContent = "Send a Bloom";
 
   document.getElementById("teacher-role").textContent = data.role;
   document.getElementById("teacher-name").textContent = data.name;
@@ -97,22 +58,18 @@ function renderLetter(key, isSwitch = false) {
     paragraphsContainer.appendChild(p);
   });
 
-  document.getElementById("directory-view").classList.add("hidden");
+  document.getElementById("cover-view").classList.add("hidden");
   document.getElementById("letter-view").classList.remove("hidden");
   if (window.lucide) lucide.createIcons();
 
   if (window.gsap) {
-    if (isSwitch) {
-      gsap.fromTo(".stationery-card", { y: 12, opacity: 0.4 }, { y: 0, opacity: 1, duration: 0.4, ease: "power2.out" });
-    } else {
-      gsap.from(".reveal", {
-        y: 22,
-        opacity: 0,
-        duration: 0.85,
-        stagger: 0.14,
-        ease: "power3.out"
-      });
-    }
+    gsap.from(".reveal", {
+      y: 22,
+      opacity: 0,
+      duration: 0.85,
+      stagger: 0.14,
+      ease: "power3.out"
+    });
   }
 }
 
@@ -132,76 +89,12 @@ document.getElementById("appreciate-btn").addEventListener("click", () => {
     bloomCount === 1 ? "Bloom Sent!" : `Sent ${bloomCount} Blooms`;
 });
 
-function renderDirectory() {
-  currentTeacherKey = null;
-  document.title = "Notes of Gratitude • Class of 2026";
+// Boot
+const teacherKey = detectTeacherKey();
+if (teacherKey) {
+  renderLetter(teacherKey);
+} else {
   document.getElementById("ambient-glow").style.background =
     "radial-gradient(ellipse at top, rgba(245, 158, 11, 0.08), transparent 70%)";
-
-  const grid = document.getElementById("directory-grid");
-  grid.innerHTML = "";
-
-  const keys = Object.keys(TEACHERS);
-
-  document.getElementById("open-first-btn").onclick = () => {
-    const firstKey = keys[0];
-    window.history.pushState({}, "", getTeacherUrl(firstKey));
-    renderLetter(firstKey);
-  };
-
-  Object.entries(TEACHERS).forEach(([key, data]) => {
-    const card = document.createElement("a");
-    card.href = getTeacherUrl(key);
-    card.className =
-      "dir-card group p-6 rounded-2xl bg-white border border-stone-200/80 shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all flex items-center justify-between";
-
-    card.innerHTML = `
-      <div class="flex items-center gap-4">
-        <div class="w-11 h-11 rounded-xl flex items-center justify-center font-serif font-semibold text-lg"
-             style="background-color: ${data.accentSoft}; color: ${data.accent};">
-          ${data.name.replace(/^(Ms|Mr)\s+/i, "")[0]}
-        </div>
-        <div>
-          <h2 class="font-serif font-semibold text-lg text-stone-900 group-hover:underline">${data.name}</h2>
-          <p class="text-xs text-stone-400">/${key}</p>
-        </div>
-      </div>
-      <i data-lucide="arrow-up-right" class="w-4 h-4 text-stone-400 group-hover:text-stone-800 transition"></i>
-    `;
-
-    card.addEventListener("click", (e) => {
-      e.preventDefault();
-      window.history.pushState({}, "", getTeacherUrl(key));
-      renderLetter(key);
-    });
-
-    grid.appendChild(card);
-  });
-
-  document.getElementById("letter-view").classList.add("hidden");
-  document.getElementById("directory-view").classList.remove("hidden");
   if (window.lucide) lucide.createIcons();
-
-  if (window.gsap) {
-    gsap.from(".dir-card", {
-      y: 16,
-      opacity: 0,
-      duration: 0.6,
-      stagger: 0.08,
-      ease: "power2.out"
-    });
-  }
-}
-
-window.addEventListener("popstate", () => {
-  const key = detectTeacherKey();
-  if (key) renderLetter(key);
-  else renderDirectory();
-});
-
-const initialKey = detectTeacherKey();
-if (initialKey) {
-  renderLetter(initialKey);
-} else {
-  renderDirectory();
 }
